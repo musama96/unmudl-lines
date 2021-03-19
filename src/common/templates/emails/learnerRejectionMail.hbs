@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+    <html>
+    <head>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+      <title></title>
+      <meta name="generator" content="LibreOffice 6.0.7.3 (Linux)"/>
+      <meta name="author" content="Windows User"/>
+      <meta name="created" content="2020-06-12T22:03:00"/>
+      <meta name="changedby" content="Windows User"/>
+      <meta name="changed" content="2020-06-12T22:10:00"/>
+      <meta name="AppVersion" content="14.0000"/>
+      <meta name="DocSecurity" content="0"/>
+      <meta name="HyperlinksChanged" content="false"/>
+      <meta name="LinksUpToDate" content="false"/>
+      <meta name="ScaleCrop" content="false"/>
+      <meta name="ShareDoc" content="false"/>
+      <style type="text/css">
+        @page { margin: 1in }
+        p { margin-bottom: 0.1in; direction: ltr; line-height: 115%; text-align: left; orphans: 2; widows: 2 }
+        a:link { color: #0000ff }
+      </style>
+    </head>
+    <body lang="en-US" link="#0000ff" dir="ltr">
+    {{> header unmudlLogo = unmudlLogo}}
+    <p style="margin-bottom: 0.14in"><br/>
+    <br/>
+
+    </p>
+    <p style="margin-bottom: 0.14in"> {{date}}</p>
+    <p style="margin-bottom: 0.14in">Dear {{learner.fullname}},</p>
+    <p style="margin-bottom: 0.14in">This is to let you know that
+    {{college.title}} will not be able to offer your {{course.title}}.  The reasons this
+    happened is because</p>
+    <p style="margin-bottom: 0.14in">{{{reason}}}</p>
+    <p style="margin-bottom: 0.14in">Because this course has been removed
+    from “My Enrollments,” you will no longer be able to reach out to
+    the college directly using the “Chat with College” button.
+    However, if you need to speak with them, you can do so using this
+    email address:  {{superadmin.emailAddress}}.  If your credit
+    card had already been charged, the amount will be refundedn in full.
+    </p>
+    <p style="margin-bottom: 0.14in">We are so sorry this course didn’t
+    work out. Feel free to browse other courses on Unmudl to see if there is a match that fits your needs. If you have ideas on how Unmudl could have changed
+    something to make this a better outcome, drop us a line at
+    <font color="#0000ff"><u><a href="mailto:{{supportMail}}">{{supportMail}}</a></u></font>
+    .  We’ll use your suggestions to make the experience better for the
+    next person.
+    </p>
+    <p style="margin-bottom: 0.14in"><a name="_GoBack"></a>Thank you –
+    the Unmudl Team at Social Tech</p>
+    <p style="margin-bottom: 0.14in"><br/>
+    <br/>
+
+    </p>
+    {{> footer}}
+    </body>
+    </html>

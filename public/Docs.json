@@ -1,0 +1,4833 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Unmudl APIs Documentation",
+    "description": "Unmudl documentation page for describing college, admin and user portal APIs",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "AuthCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "emailAddress": {
+            "type": "string",
+            "example": "neohass77@gmail.com",
+            "description": "Email address for logging into the college or admin portal."
+          },
+          "password": {
+            "type": "string",
+            "example": "haseeb",
+            "description": "Enter password for logging in."
+          }
+        },
+        "required": [
+          "emailAddress",
+          "password"
+        ]
+      },
+      "UpdatePreferencesDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "boolean"
+          },
+          "enrollment": {
+            "type": "boolean"
+          },
+          "refund": {
+            "type": "boolean"
+          },
+          "newNotification": {
+            "type": "boolean"
+          },
+          "buyCourse": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "email",
+          "enrollment",
+          "refund",
+          "newNotification",
+          "buyCourse"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "fullname": {
+            "type": "string",
+            "default": ""
+          },
+          "emailAddress": {
+            "type": "string",
+            "default": ""
+          },
+          "designation": {
+            "type": "string",
+            "default": ""
+          },
+          "profilePhoto": {
+            "type": "string",
+            "format": "binary"
+          },
+          "notifications": {
+            "$ref": "#/components/schemas/UpdatePreferencesDto"
+          }
+        },
+        "required": [
+          "notifications"
+        ]
+      },
+      "UpdateBasicDetailsDto": {
+        "type": "object",
+        "properties": {
+          "fullname": {
+            "type": "string",
+            "default": ""
+          },
+          "emailAddress": {
+            "type": "string",
+            "default": ""
+          },
+          "designation": {
+            "type": "string",
+            "default": ""
+          },
+          "profilePhoto": {
+            "type": "string",
+            "format": "binary"
+          }
+        }
+      },
+      "UpdatePasswordDto": {
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "oldPassword",
+          "newPassword"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "profilePhoto": {
+            "type": "string",
+            "format": "binary"
+          },
+          "fullname": {
+            "type": "string"
+          },
+          "emailAddress": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "admin",
+              "moderator",
+              "instructor",
+              "manager"
+            ],
+            "type": "string"
+          },
+          "designation": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fullname",
+          "emailAddress",
+          "password",
+          "designation"
+        ]
+      },
+      "EmailDto": {
+        "type": "object",
+        "properties": {
+          "emailAddress": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "emailAddress"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token",
+          "password"
+        ]
+      },
+      "StripeTokenDto": {
+        "type": "object",
+        "properties": {
+          "stripeToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "stripeToken"
+        ]
+      },
+      "AddTransactionDto": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "courseId",
+          "amount"
+        ]
+      },
+      "UserIdDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "UpdateUserRoleDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId",
+          "role"
+        ]
+      },
+      "InviteUserDto": {
+        "type": "object",
+        "properties": {
+          "fullname": {
+            "type": "string"
+          },
+          "emailAddress": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "moderator",
+              "instructor",
+              "manager"
+            ]
+          },
+          "courseId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fullname",
+          "emailAddress",
+          "role"
+        ]
+      },
+      "CoordinatesDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "Point"
+          },
+          "coordinates": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "coordinates"
+        ]
+      },
+      "UrlDto": {
+        "type": "object",
+        "properties": {
+          "website": {
+            "type": "string"
+          },
+          "facebook": {
+            "type": "string"
+          },
+          "twitter": {
+            "type": "string"
+          }
+        }
+      },
+      "ContactDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "number",
+          "name"
+        ]
+      },
+      "SignUpCollegeDto": {
+        "type": "object",
+        "properties": {
+          "profilePhoto": {
+            "type": "string",
+            "format": "binary"
+          },
+          "collegeLogo": {
+            "type": "string",
+            "format": "binary"
+          },
+          "fullname": {
+            "type": "string"
+          },
+          "emailAddress": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "designation": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "communityCollegeId": {
+            "type": "string"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CoordinatesDto"
+          },
+          "url": {
+            "$ref": "#/components/schemas/UrlDto"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/ContactDto"
+          },
+          "title": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "zip": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fullname",
+          "emailAddress",
+          "password",
+          "designation",
+          "title",
+          "address",
+          "city",
+          "state",
+          "zip",
+          "country",
+          "timezone"
+        ]
+      },
+      "UpdateCollegeDto": {
+        "type": "object",
+        "properties": {
+          "collegeLogo": {
+            "type": "string",
+            "format": "binary"
+          },
+          "description": {
+            "type": "string"
+          },
+          "communityCollegeId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "zip": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CoordinatesDto"
+          },
+          "url": {
+            "$ref": "#/components/schemas/UrlDto"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/ContactDto"
+          }
+        },
+        "required": [
+          "title",
+          "address",
+          "city",
+          "state",
+          "zip",
+          "country",
+          "timezone",
+          "coordinates",
+          "url",
+          "contact"
+        ]
+      },
+      "SuspendLearnerDto": {
+        "type": "object",
+        "properties": {
+          "learnerId": {
+            "type": "string"
+          },
+          "courseId": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "unpaid",
+              "pending",
+              "approved",
+              "declined",
+              "canceled",
+              "refunded"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "learnerId",
+          "courseId",
+          "status"
+        ]
+      },
+      "CreateEnrollmentDto": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "string"
+          },
+          "cardId": {
+            "type": "string"
+          },
+          "promoId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "courseId",
+          "cardId"
+        ]
+      },
+      "SetEnrollmentCancelledStatusDto": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "courseId",
+          "status"
+        ]
+      },
+      "DurationDto": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string"
+          },
+          "end": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ]
+      },
+      "TimeRangeDto": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "example": "5:17 PM"
+          },
+          "end": {
+            "type": "string",
+            "example": "9:17 PM"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ]
+      },
+      "CreateCourseDto": {
+        "type": "object",
+        "properties": {
+          "coverPhoto": {
+            "type": "string",
+            "format": "binary"
+          },
+          "attachments": {
+            "type": "string",
+            "format": "binary"
+          },
+          "altTag": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "instructorIds": {
+            "type": "string",
+            "description": "enter in form of array like [\"5e21bd86529642445c61bc8d\", \"5e21bd86529642445c61bc8g\"]"
+          },
+          "followUpCourseId": {
+            "type": "string"
+          },
+          "attendanceInformation": {
+            "type": "string"
+          },
+          "eligibilityRestrictions": {
+            "type": "string"
+          },
+          "relatedCourse": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "enrollmentsAllowed": {
+            "type": "number"
+          },
+          "enrollmentDeadline": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string",
+            "enum": [
+              "inperson",
+              "online",
+              "blended"
+            ]
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "zip": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CoordinatesDto"
+          },
+          "date": {
+            "$ref": "#/components/schemas/DurationDto"
+          },
+          "time": {
+            "$ref": "#/components/schemas/TimeRangeDto"
+          },
+          "hoursOffered": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "outline": {
+            "type": "string"
+          },
+          "skillOutcomes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "instructorIds",
+          "title",
+          "price",
+          "enrollmentsAllowed",
+          "enrollmentDeadline",
+          "venue",
+          "address",
+          "city",
+          "state",
+          "zip",
+          "country",
+          "coordinates",
+          "date",
+          "time",
+          "hoursOffered",
+          "description",
+          "outline",
+          "skillOutcomes"
+        ]
+      },
+      "EditCourseDto": {
+        "type": "object",
+        "properties": {
+          "coverPhoto": {
+            "type": "string",
+            "format": "binary"
+          },
+          "altTag": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "instructorIds": {
+            "type": "string",
+            "description": "enter in form of array like [\"5e21bd86529642445c61bc8d\", \"5e21bd86529642445c61bc8g\"]"
+          },
+          "followUpCourseId": {
+            "type": "string"
+          },
+          "attendanceInformation": {
+            "type": "string"
+          },
+          "eligibilityRestrictions": {
+            "type": "string"
+          },
+          "relatedCourse": {
+            "type": "string"
+          },
+          "courseId": {
+            "type": "string"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "enrollmentsAllowed": {
+            "type": "number"
+          },
+          "enrollmentDeadline": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string",
+            "enum": [
+              "inperson",
+              "online",
+              "blended"
+            ]
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "zip": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CoordinatesDto"
+          },
+          "date": {
+            "$ref": "#/components/schemas/DurationDto"
+          },
+          "time": {
+            "$ref": "#/components/schemas/TimeRangeDto"
+          },
+          "hoursOffered": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "outline": {
+            "type": "string"
+          },
+          "skillOutcomes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "instructorIds",
+          "title",
+          "price",
+          "enrollmentsAllowed",
+          "enrollmentDeadline",
+          "venue",
+          "address",
+          "city",
+          "state",
+          "zip",
+          "country",
+          "coordinates",
+          "date",
+          "time",
+          "hoursOffered",
+          "description",
+          "outline",
+          "skillOutcomes"
+        ]
+      },
+      "CreatePromoDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "discount": {
+            "type": "number"
+          },
+          "date": {
+            "$ref": "#/components/schemas/DurationDto"
+          },
+          "discountMetric": {
+            "type": "string",
+            "enum": [
+              "percentage",
+              "amount"
+            ]
+          },
+          "applyTo": {
+            "type": "string"
+          },
+          "courses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "title",
+          "discount",
+          "date",
+          "discountMetric",
+          "applyTo",
+          "courses"
+        ]
+      },
+      "UpdatePromoDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "discount": {
+            "type": "number"
+          },
+          "discountMetric": {
+            "type": "string",
+            "enum": [
+              "percentage",
+              "amount"
+            ]
+          },
+          "applyTo": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "courses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "date": {
+            "$ref": "#/components/schemas/DurationDto"
+          }
+        },
+        "required": [
+          "title",
+          "discount",
+          "discountMetric",
+          "applyTo",
+          "status",
+          "courses",
+          "date"
+        ]
+      },
+      "SuspendPromoDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "_id",
+          "status"
+        ]
+      },
+      "ReportLearnerDto": {
+        "type": "object",
+        "properties": {
+          "learnerId": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "learnerId",
+          "note"
+        ]
+      },
+      "CreateLearnerDto": {
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "emailAddress": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "firstname",
+          "lastname",
+          "password"
+        ]
+      },
+      "VerifyLearnerDto": {
+        "type": "object",
+        "properties": {
+          "verificationCode": {
+            "type": "number"
+          },
+          "learnerId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "verificationCode",
+          "learnerId"
+        ]
+      },
+      "CreateReviewCategoryDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "question"
+        ]
+      },
+      "CreateBlogDto": {
+        "type": "object",
+        "properties": {
+          "headerImage": {
+            "type": "string",
+            "format": "binary"
+          },
+          "title": {
+            "type": "string"
+          },
+          "altText": {
+            "type": "string"
+          },
+          "contributors": {
+            "type": "string"
+          },
+          "permalink": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "content"
+        ]
+      },
+      "UpdateBlogDto": {
+        "type": "object",
+        "properties": {
+          "headerImage": {
+            "type": "string",
+            "format": "binary"
+          },
+          "title": {
+            "type": "string"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "altText": {
+            "type": "string"
+          },
+          "contributors": {
+            "type": "string"
+          },
+          "permalink": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "content"
+        ]
+      },
+      "UpdateBlogPublishedDto": {
+        "type": "object",
+        "properties": {
+          "blogId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "blogId",
+          "status"
+        ]
+      },
+      "CreateStateDto": {
+        "type": "object",
+        "properties": {
+          "abbreviation": {
+            "type": "string"
+          },
+          "longitude": {
+            "type": "number"
+          },
+          "latitude": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "abbreviation",
+          "longitude",
+          "latitude",
+          "name"
+        ]
+      },
+      "CreateCountryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "code": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "code"
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/auth/user/login": {
+      "post": {
+        "operationId": "userLogin",
+        "summary": "College and Admin users sign in API.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthCredentialsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Access Token will be sent back on successful login."
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/learner/login": {
+      "post": {
+        "operationId": "learnerLogin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthCredentialsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "GetAllUsers",
+        "summary": "Get a paginated list of users.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "learnerId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "RemoveUser",
+        "summary": "Delete user.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserIdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/profile": {
+      "get": {
+        "operationId": "GetProfileData",
+        "summary": "Get user profile details.",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/details/{userId}": {
+      "get": {
+        "operationId": "GetUserDetails",
+        "summary": "Get user details by id.",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/update": {
+      "post": {
+        "operationId": "UpdateUserDetails",
+        "summary": "Update user details.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/updateDetails": {
+      "post": {
+        "operationId": "UpdateUserBasicDetails",
+        "summary": "Update user basic details.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBasicDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/updatePreferences": {
+      "post": {
+        "operationId": "UpdateUserPreferences",
+        "summary": "Update user notification preferences.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/updatePassword": {
+      "post": {
+        "operationId": "UpdateUserPassword",
+        "summary": "Update user password.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/instructors": {
+      "get": {
+        "operationId": "GetInstructors",
+        "summary": "Get a paginated list of instructors optionally by college.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "learnerId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/instructors/csv": {
+      "get": {
+        "operationId": "GetInstructorsCsv",
+        "summary": "Get a csv list of instructors optionally by college.",
+        "parameters": [
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/admins": {
+      "get": {
+        "operationId": "GetAdmins",
+        "summary": "Get a paginated list of admins optionally by college.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "learnerId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/create/other": {
+      "post": {
+        "operationId": "addOtherUser",
+        "summary": "Add other users to college or admin portal.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/forgotPassword": {
+      "post": {
+        "operationId": "sendPasswordResetLink",
+        "summary": "Get password reset link.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/reset/password": {
+      "post": {
+        "operationId": "resetPassword",
+        "summary": "Reset user password.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/create": {
+      "post": {
+        "operationId": "addUser",
+        "summary": "Create a user account.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/check-email": {
+      "post": {
+        "operationId": "checkIfEmailExists",
+        "summary": "Check whether an email is already registered.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/add-card": {
+      "post": {
+        "operationId": "addCard",
+        "summary": "Add new user card to stripe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/StripeTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/get-cards": {
+      "get": {
+        "operationId": "getCards",
+        "summary": "Add new user card to stripe",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/connect-account": {
+      "post": {
+        "operationId": "connectStripeAccount",
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/create-transfer": {
+      "post": {
+        "operationId": "createTransferForCollege",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTransactionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/create-payout": {
+      "post": {
+        "operationId": "createPayoutForCollege",
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/get-balance": {
+      "get": {
+        "operationId": "getStripeAccountBalance",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/instructor/details": {
+      "get": {
+        "operationId": "getInstructorDetails",
+        "summary": "Get instructor details.",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/instructor/analytics": {
+      "get": {
+        "operationId": "GetTopInstructors",
+        "summary": "Get top performing instructors.",
+        "parameters": [
+          {
+            "name": "start",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/college-accounts/analytics": {
+      "get": {
+        "operationId": "GetCollegeAccountCounts",
+        "summary": "Get count of new and total college accounts added.",
+        "parameters": [
+          {
+            "name": "start",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/instructor/courses": {
+      "get": {
+        "operationId": "getInstructorCourses",
+        "summary": "Get instructor details",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "column",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/suspend": {
+      "post": {
+        "operationId": "SuspendUser",
+        "summary": "Suspend user.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UserIdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/update/roles": {
+      "post": {
+        "operationId": "updateUserRoles",
+        "summary": "Update user permission level.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/invitations": {
+      "post": {
+        "operationId": "InviteUser",
+        "summary": "Update user notification preferences.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Invitations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/colleges/create": {
+      "post": {
+        "operationId": "create",
+        "summary": "College Signup: All data from the four steps of sign-up will be sent to create a new college account.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpCollegeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "College"
+        ]
+      }
+    },
+    "/colleges/check-email": {
+      "post": {
+        "operationId": "checkIfEmailExists",
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "College"
+        ]
+      }
+    },
+    "/colleges/profile": {
+      "get": {
+        "operationId": "GetUsersCollege",
+        "summary": "Get user's college.",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "College"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/colleges/update": {
+      "post": {
+        "operationId": "UpdateCollegeProfile",
+        "summary": "Update college profile.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCollegeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "College"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/colleges": {
+      "get": {
+        "operationId": "GetColleges",
+        "summary": "Get a paginated list of registered colleges.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "learnerId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "College"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/colleges/analytics": {
+      "get": {
+        "operationId": "GetTopColleges",
+        "summary": "Get a paginated list of registered colleges.",
+        "parameters": [
+          {
+            "name": "start",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "College"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/colleges/revenue/graph": {
+      "get": {
+        "operationId": "GetCollegeRevenueGraph",
+        "summary": "Get a paginated list of registered colleges.",
+        "parameters": [
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "required": false,
+            "in": "query",
+            "description": "1, 30 or 365",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "type",
+            "required": true,
+            "in": "query",
+            "description": "college or unmudl",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "College"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/colleges/finance-summary": {
+      "get": {
+        "operationId": "GetFinanceSummary",
+        "summary": "Get total revenue, shared revenue, pending payments, earnings available and last transaction date.",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "College"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/activities": {
+      "get": {
+        "operationId": "getActivities",
+        "summary": "Get list of promos.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activities"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/enrollments/learners/change-status": {
+      "post": {
+        "operationId": "SuspendLearnerEnrollment",
+        "summary": "Change learner enrollment status.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/SuspendLearnerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/enrollments/learners/details": {
+      "get": {
+        "operationId": "GetLearnerDetails",
+        "summary": "Get learner details for learner profile view.",
+        "parameters": [
+          {
+            "name": "learnerId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/enrollments/analytics/revenue": {
+      "get": {
+        "operationId": "GetRevenueAnalytics",
+        "summary": "Get revenue details for marketplace analytics page.",
+        "parameters": [
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "required": false,
+            "in": "query",
+            "description": "1, 30 or 365",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "type",
+            "required": true,
+            "in": "query",
+            "description": "college or unmudl",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/enrollments/analytics/revenue/graph": {
+      "get": {
+        "operationId": "GetRevenueAnalyticsForGraph",
+        "summary": "Get revenue details for marketplace analytics page graph.",
+        "parameters": [
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "required": false,
+            "in": "query",
+            "description": "1, 30 or 365",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "type",
+            "required": true,
+            "in": "query",
+            "description": "college or unmudl",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/enrollments/learners": {
+      "get": {
+        "operationId": "getLearnersByCollege",
+        "summary": "Get a paginated list of all learners enrolled in a college or a course.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "learnerId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/enrollments/learners/approved": {
+      "get": {
+        "operationId": "getApprovedLearnersByCollege",
+        "summary": "Get a paginated list of all approved learners enrolled in a college or a course.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "learnerId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/enrollments/learners/count": {
+      "get": {
+        "operationId": "getLearnersCount",
+        "summary": "Get count of all enrollments between a start and end date optionally by college.",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "default": "2020-02-15T06:49:06.472Z",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "default": "2020-02-15T06:49:06.472Z",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "required": false,
+            "in": "query",
+            "description": "Valid options: 1, 30 or 365",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/enrollments/learners/growth": {
+      "get": {
+        "operationId": "getLearnersGrowth",
+        "summary": "Get growth of all enrollments between a start and end date defined by intervals, optionally by college.",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "default": "2020-02-15T06:49:06.472Z",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "default": "2020-02-15T06:49:06.472Z",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "required": false,
+            "in": "query",
+            "description": "Valid options: 1, 30 or 365",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/enrollments/count": {
+      "get": {
+        "operationId": "GetTotalEnrollmentsAllowed",
+        "summary": "Get total enrollments allowed and total enrollments in the course with enrollment deadline and course dates.",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/enrollments/learners/csv": {
+      "get": {
+        "operationId": "getLearnersInCSV",
+        "summary": "Get list of all learners enrolled in a college in a csv file.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/learner-enrollments/addEnrollment": {
+      "post": {
+        "operationId": "AddEnrollment",
+        "summary": "Add learner enrollment data.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEnrollmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Enrollments (User Portal)"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses": {
+      "get": {
+        "operationId": "GetCoursesList",
+        "summary": "Get paginated list of courses.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "default": "0",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "daysLeft",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "open",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "rating",
+            "required": false,
+            "in": "query",
+            "default": "[1,2,3,4,5]",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/analytics": {
+      "get": {
+        "operationId": "GetCoursesAnalytics",
+        "summary": "Get analytics for courses.",
+        "parameters": [
+          {
+            "name": "start",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/analytics/count": {
+      "get": {
+        "operationId": "GetCoursesCount",
+        "summary": "Get new and total courses count.",
+        "parameters": [
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "required": false,
+            "in": "query",
+            "description": "1, 30 or 365",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "type",
+            "required": true,
+            "in": "query",
+            "description": "college or unmudl",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/details": {
+      "get": {
+        "operationId": "GetCourseDetails",
+        "summary": "Get course details.",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/revenue/{courseId}": {
+      "get": {
+        "operationId": "GetCourseRevenue",
+        "summary": "Get course revenue.",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/reviews/{courseId}": {
+      "get": {
+        "operationId": "GetCourseReviews",
+        "summary": "Get course revenue.",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/promos/valid": {
+      "get": {
+        "operationId": "GetValidPromoCourses",
+        "summary": "Get valid courses for promo dropdown.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "promoTitle",
+            "required": true,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/ratings/{courseId}": {
+      "get": {
+        "operationId": "GetCourseRatings",
+        "summary": "Get course revenue.",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/setEnrollmentCancelled": {
+      "post": {
+        "operationId": "SetEnrollmentCancelledStatus",
+        "summary": "Set course active status.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/SetEnrollmentCancelledStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/create": {
+      "post": {
+        "operationId": "CreateCourse",
+        "summary": "Create a course",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/edit": {
+      "post": {
+        "operationId": "UpdateCourse",
+        "summary": "Update a course",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/EditCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/enrollment-statistics": {
+      "get": {
+        "operationId": "GetEnrollmentStatistics",
+        "summary": "Get course enrollment statistics.",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "filter",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "underenrolled",
+                "overenrolled"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/refund-statistics": {
+      "get": {
+        "operationId": "GetRefundStatistics",
+        "summary": "Get course refund statistics.",
+        "parameters": [
+          {
+            "name": "refundRate",
+            "required": false,
+            "in": "query",
+            "default": "20",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/courses/rejection-statistics": {
+      "get": {
+        "operationId": "GetHighRejectionCourses",
+        "summary": "Get course rejection rate statistics.",
+        "parameters": [
+          {
+            "name": "rejectionRate",
+            "required": false,
+            "in": "query",
+            "default": "20",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Courses"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/promos": {
+      "get": {
+        "operationId": "GetPromos",
+        "summary": "Get list of promos.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseKeyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "discount",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "applyTo",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "start",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "end",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Promos"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CreatePromo",
+        "summary": "Create a promo.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePromoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Promos"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/promos/update": {
+      "post": {
+        "operationId": "UpdatePromo",
+        "summary": "Update promo details.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePromoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Promos"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/promos/updateSuspended": {
+      "post": {
+        "operationId": "UpdateSuspendedStatus",
+        "summary": "Update promo suspended status.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/SuspendPromoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Promos"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/promos/details/{promoId}": {
+      "get": {
+        "operationId": "GetPromoDetails",
+        "summary": "Get promo details.",
+        "parameters": [
+          {
+            "name": "promoId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Promos"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/promos/history/{promoId}": {
+      "get": {
+        "operationId": "GetPromoHistory",
+        "summary": "Get promo transaction history.",
+        "parameters": [
+          {
+            "name": "promoId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Promos"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admins/learners/report": {
+      "post": {
+        "operationId": "ReportLearner",
+        "summary": "Report a learner.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportLearnerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Learners (Admin Portal)"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admins/learners/analytics/count": {
+      "get": {
+        "operationId": "GetLearnersEnrolledCountAnalytics",
+        "summary": "Get a count of learners enrolled for analytics.",
+        "parameters": [
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "required": false,
+            "in": "query",
+            "description": "1, 30 or 365",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "type",
+            "required": true,
+            "in": "query",
+            "description": "college or unmudl",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Learners (Admin Portal)"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admins/learners/count": {
+      "get": {
+        "operationId": "GetLearnersEnrolledCount",
+        "summary": "Get a count of learners enrolled between a start date and end date.",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "default": "2020-02-15T06:49:06.472Z",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "default": "2020-02-15T06:49:06.472Z",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "required": false,
+            "in": "query",
+            "description": "Valid options: 1, 30 or 365",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Learners (Admin Portal)"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admins/learners/growth": {
+      "get": {
+        "operationId": "GetUserGrowthStats",
+        "summary": "Get the growth of learners between start date and end date in day, month or year intervals.",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "default": "2020-02-15T06:49:06.472Z",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "default": "2020-02-15T06:49:06.472Z",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "required": false,
+            "in": "query",
+            "description": "Valid options: 1, 30 or 365",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Learners (Admin Portal)"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/learners/payment-method": {
+      "post": {
+        "operationId": "CreatePaymentMethod",
+        "summary": "Add learner payment method.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StripeTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Learners (User Portal)"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "GetPaymentMethods",
+        "summary": "Get learner payment methods.",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Learners (User Portal)"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/learners/create": {
+      "post": {
+        "operationId": "CreateLearner",
+        "summary": "Learners Signup",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLearnerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Learners (User Portal)"
+        ]
+      }
+    },
+    "/learners/verify": {
+      "post": {
+        "operationId": "VerifyLearner",
+        "summary": "Learners Signup",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyLearnerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Learners (User Portal)"
+        ]
+      }
+    },
+    "/learners/forgotPassword": {
+      "post": {
+        "operationId": "sendPasswordResetLink",
+        "summary": "Get password reset link.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Learners (User Portal)"
+        ]
+      }
+    },
+    "/external/score-card": {
+      "get": {
+        "operationId": "fetchTitlesFromCollegeScorecard",
+        "summary": "Get a list of college titles from College ScoreCard external API.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "learnerId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "External APIs"
+        ]
+      }
+    },
+    "/review-categories": {
+      "post": {
+        "operationId": "createReviewCategory",
+        "summary": "Create a review category.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReviewCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Review Categories"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "getReviewCategories",
+        "summary": "Get review categories.",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "collegeId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "learnerId",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Review Categories"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/blogs": {
+      "post": {
+        "operationId": "Create",
+        "summary": "Create blog as pending or draft.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlogDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Blogs"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "GetBlogs",
+        "summary": "Get blogs list.",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "default": "1",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "default": "10",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "pending",
+                "draft",
+                "published",
+                "unpublished"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Blogs"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/blogs/details/{blogId}": {
+      "get": {
+        "operationId": "GetBlogDetails",
+        "summary": "Get blog details.",
+        "parameters": [
+          {
+            "name": "blogId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Blogs"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/blogs/update": {
+      "post": {
+        "operationId": "UpdateBlog",
+        "summary": "Update blog details.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBlogDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Blogs"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/blogs/update/status": {
+      "post": {
+        "operationId": "UpdateBlogPublishedStatus",
+        "summary": "Update blog published status.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBlogPublishedDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Blogs"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/blogs/delete/{blogId}": {
+      "delete": {
+        "operationId": "DeleteBlogById",
+        "summary": "Delete blog.",
+        "parameters": [
+          {
+            "name": "blogId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Blogs"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/blogs/restore/{blogId}": {
+      "post": {
+        "operationId": "RestoreBlogByOldId",
+        "summary": "Restore old blog.",
+        "parameters": [
+          {
+            "name": "blogId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Blogs"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/locations/state": {
+      "get": {
+        "operationId": "getStates",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Locations"
+        ]
+      },
+      "post": {
+        "operationId": "createState",
+        "summary": "Add a state.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Locations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/locations/country": {
+      "get": {
+        "operationId": "getCountries",
+        "parameters": [
+          {
+            "name": "keyword",
+            "required": false,
+            "in": "query",
+            "default": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Locations"
+        ]
+      },
+      "post": {
+        "operationId": "createContry",
+        "summary": "Add a country.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCountryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Locations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  }
+}

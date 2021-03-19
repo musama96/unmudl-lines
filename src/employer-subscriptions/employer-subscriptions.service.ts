@@ -1,0 +1,593 @@
+import * as mongoose from 'mongoose';
+import ResponseHandler from '../common/ResponseHandler';
+
+import { Logger, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { StripeService } from '../stripe/stripe.service';
+import { defaultEmployerSubscriptionPlans } from './data/defaultEmployerSubscriptionPlans';
+import { UpdateEmployerSubscriptionDto } from './dto/updateEmployerSubscription.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { UpdateCollegeOrStateDto } from './dto/updateCollegeOrState.dto';
+import { EmployerAdminsService } from '../employer-admins/employer-admins.service';
+import { CollegesService } from '../colleges/colleges.service';
+@Injectable()
+export class EmployerSubscriptionsService {
+  logger = new Logger(EmployerSubscriptionsService.name);
+
+  constructor(
+    private readonly stripeService: StripeService,
+    private readonly employerAdminsService: EmployerAdminsService,
+    private readonly collegesService: CollegesService,
+    @InjectModel('employer-companies') private readonly employerModel,
+    @InjectModel('employer-subscriptions') private readonly employerSubscriptionModel,
+    @InjectModel('employer-subscription-plans') private readonly employerSubscriptionPlanModel,
+    @InjectModel('employer-subscription-promos') private readonly employerSubscriptionPromoModel,
+  ) {}
+
+  async updateEmployerSubscription(subscription: UpdateEmployerSubscriptionDto) {
+    const existingSubscription = await this.employerSubscriptionModel
+      .findOne({
+        status: 'active',
+        employer: subscription.employer,
+      })
+      .populate('activePlan')
+      .exec();
+
+    const promo = subscription.promo ? await this.employerSubscriptionPromoModel.findById(subscription.promo).lean() : null;
+
+    const plan = await this.employerSubscriptionPlanModel.findById(subscription.plan).lean();
+
+    const { data: selectedPrice } = await this.stripeService.getProductPrice(subscription.priceStripeId);
+
+    let isUpgrading = null;
+
+    if (plan.level !== 0) {
+      const isSubscribingMonthly = subscription.priceStripeId === plan.prices.monthly.stripeId;
+      const isExistingMonthly = existingSubscription.activePriceInterval === 'month';
+      const priceUpdate =
+        isSubscribingMonthly === isExistingMonthly ? 'same' : isSubscribingMonthly && !isExistingMonthly ? 'downgrade' : 'upgrade';
+      const isUpgradingPlan =
+        plan.level === existingSubscription.activePlan.level
+          ? 'same'
+          : plan.level > existingSubscription.activePlan.level
+          ? 'upgrade'
+          : 'downgrade';
+
+      if (isUpgradingPlan === 'upgrade' || (isUpgradingPlan === 'same' && priceUpdate === 'upgrade')) {
+        isUpgrading = true;
+      } else {
+        isUpgrading = false;
+      }
+    } else {
+      isUpgrading = false;
+    }
+
+    let stripeSubscriptionId = null;
+    try {
+      if (isUpgrading) {
+        if (existingSubscription && existingSubscription.stripeSubscriptionId) {
+          const { data: stripeSubscription } = await this.stripeService.updateEmployerSubscription({
+            newPriceId: subscription.priceStripeId,
+            subscriptionId: existingSubscription.stripeSubscriptionId,
+            prorate: true,
+            coupon: promo ? promo.stripeTitle : null,
+            downgrade: false,
+          });
+          stripeSubscriptionId = stripeSubscription.id;
+        } else if (subscription.card) {
+          const { data: stripeSubscription } = await this.stripeService.createEmployerSubscription({
+            price: subscription.priceStripeId,
+            customer: subscription.stripeCustomerId,
+            card: subscription.card,
+            coupon: promo ? promo.stripeTitle : null,
+          });
+          stripeSubscriptionId = stripeSubscription.id;
+        } else {
+          return ResponseHandler.fail(`No existing paid subscription found. Need card id initiate new subscription.`);
+        }
+      } else {
+        if (plan.level !== 0) {
+          const { data: stripeSubscription } = await this.stripeService.updateEmployerSubscription({
+            newPriceId: subscription.priceStripeId,
+            subscriptionId: existingSubscription.stripeSubscriptionId,
+            prorate: false,
+            coupon: promo ? promo.stripeTitle : null,
+            downgrade: true,
+          });
+          stripeSubscriptionId = stripeSubscription.id;
+        }
+      }
+    } catch (e) {
+      return ResponseHandler.fail(e.response ? e.response.message : e.message);
+    }
+
+    const newSubscriptionPlan = await this.employerSubscriptionPlanModel.findById(subscription.plan).exec();
+
+    const basePrice = selectedPrice
+      ? selectedPrice.recurring.interval === 'month'
+        ? newSubscriptionPlan.prices.monthly.price
+        : newSubscriptionPlan.prices.yearly.price
+      : 0;
+    const discountAmount = basePrice * (promo ? promo.percentage / 100 : 0);
+
+    const totalPaid = basePrice - discountAmount;
+
+    const newSubscription = await this.employerSubscriptionModel.create({
+      employer: subscription.employer,
+      activePlan: subscription.plan,
+      activePlanSubscribedOn: new Date(),
+      activeProductStripeId: plan.stripeProductId,
+      activePriceStripeId: subscription.priceStripeId,
+      activePriceInterval: selectedPrice ? selectedPrice.recurring.interval : '',
+      activePlanExpiryDate: selectedPrice
+        ? selectedPrice.recurring.interval === 'month'
+          ? new Date(new Date().setMonth(new Date().getMonth() + 1))
+          : new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+        : null,
+      stripeSubscriptionId,
+      status: isUpgrading ? 'active' : existingSubscription ? 'pending' : 'active',
+      prevSubscriptionPlan: existingSubscription ? existingSubscription.activePlan : null,
+      prevSubscription: existingSubscription ? existingSubscription._id : null,
+      firstSubscriptionPayment: totalPaid,
+    });
+
+    if (existingSubscription) {
+      if (isUpgrading) {
+        existingSubscription.status = 'changed-plan';
+        existingSubscription.expiredOn = new Date();
+      }
+
+      if (newSubscriptionPlan.level > existingSubscription.activePlan.level) {
+        await this.employerAdminsService.unSuspendAdditionalAdmins(subscription.employer, newSubscription.accountLimit);
+      }
+
+      existingSubscription.nextSubscriptionPlan = subscription.plan;
+      existingSubscription.nextSubscription = newSubscription._id;
+      await existingSubscription.save();
+    }
+
+    return ResponseHandler.success(newSubscription, 'Your subscription was updated successfully.');
+  }
+
+  async subscriptionInvoicePaymentFailed(invoice) {
+    const subscription = await this.employerSubscriptionModel.findOne({ stripeSubscriptionId: invoice.subscription }).exec();
+    if (subscription.status === 'active') {
+      const localPlan = await this.employerSubscriptionPlanModel.findOne({ level: 0 }).lean();
+
+      subscription.status = 'expired-payment-failed';
+
+      const [newSubscription, canceledSubscription] = await Promise.all([
+        this.employerSubscriptionModel.create({
+          employer: subscription.employer,
+          activePlan: localPlan._id,
+          activePlanSubscribedOn: new Date(),
+          activeProductStripeId: null,
+          activePriceStripeId: subscription.priceStripeId,
+          activePriceInterval: 'month',
+          activePlanExpiryDate: null,
+          stripeSubscriptionId: null,
+          status: 'active',
+          prevSubscriptionPlan: subscription.activePlan,
+          prevSubscription: subscription._id,
+        }),
+        await subscription.save(),
+      ]);
+
+      await this.employerAdminsService.suspendAdditionalAdmins(subscription.employer, localPlan.accountLimit);
+
+      return ResponseHandler.success({ newSubscription, canceledSubscription });
+    } else if (subscription.status === 'expired-payment-failed') {
+      return ResponseHandler.success(null, 'Already canceled.');
+    } else {
+      this.logger.error(`Subscription payment failed: ${subscription._id.toString()}`);
+      this.logger.error(`Subscription status: ${subscription.status}`);
+      return ResponseHandler.fail('Invalid subscription status.');
+    }
+  }
+
+  async subscriptionInvoicePaymentSucceeded(invoice) {
+    let subscription = await this.employerSubscriptionModel
+      .findOne({
+        stripeSubscriptionId: invoice.subscription,
+        status: 'active',
+      })
+      .populate('activePlan')
+      .exec();
+
+    if (subscription) {
+      if (subscription.nextSubscription) {
+        const nextSubscription = await this.employerSubscriptionModel
+          .findById(subscription.nextSubscription)
+          .populate('activePlan')
+          .exec();
+        const { data: selectedPrice } = await this.stripeService.getProductPrice(nextSubscription.priceStripeId);
+
+        if (nextSubscription.status === 'pending') {
+          nextSubscription.activePlanExpiryDate = selectedPrice
+            ? selectedPrice.recurring.interval === 'month'
+              ? new Date(new Date().setMonth(new Date().getMonth() + 1))
+              : new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+            : null;
+          nextSubscription.status = 'active';
+          nextSubscription.prevSubscriptionPlan = subscription.activePlan._id;
+          nextSubscription.prevSubscription = subscription._id;
+
+          subscription.status = 'changed-plan';
+          subscription.expiredOn = new Date();
+
+          if (subscription.activePlan.level > nextSubscription.activePlan.level) {
+            await this.employerAdminsService.suspendAdditionalAdmins(nextSubscription.employer, nextSubscription.activePlan.accountLimit);
+          } else if (subscription.activePlan.level < nextSubscription.activePlan.level) {
+            await this.employerAdminsService.unSuspendAdditionalAdmins(nextSubscription.employer, nextSubscription.activePlan.accountLimit);
+          }
+
+          await Promise.all([nextSubscription.save(), subscription.save()]);
+        } else {
+          this.logger.warn('Employer subscription payment succeeded webhook');
+          this.logger.warn(`Next subscription exists but it's status is "${nextSubscription.status}"`);
+          this.logger.warn(`Subscription: ${subscription._id.toString()}`);
+          this.logger.warn(`Next Subscription: ${nextSubscription._id.toString()}`);
+
+          return ResponseHandler.fail('Next subscription status is not correct.');
+        }
+      } else {
+        const { data: selectedPrice } = await this.stripeService.getProductPrice(subscription.priceStripeId);
+
+        subscription.activePlanExpiryDate = selectedPrice
+          ? selectedPrice.recurring.interval === 'month'
+            ? new Date(new Date().setMonth(new Date().getMonth() + 1))
+            : new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+          : null;
+
+        await subscription.save();
+      }
+    } else {
+      subscription = await this.employerSubscriptionModel
+        .findOne({ stripeSubscriptionId: invoice.subscription })
+        .populate('activePlan')
+        .exec();
+      const activeSubscription = await this.employerSubscriptionModel.findById(subscription.prevSubscription).exec();
+
+      if (subscription) {
+        const { data: selectedPrice } = await this.stripeService.getProductPrice(subscription.priceStripeId);
+
+        this.logger.log(`Re-activating subscription: ${subscription._id.toString()}`);
+        this.logger.log(`Subscription status: ${subscription.status} `);
+
+        subscription.activePlanExpiryDate = selectedPrice
+          ? selectedPrice.recurring.interval === 'month'
+            ? new Date(new Date().setMonth(new Date().getMonth() + 1))
+            : new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+          : null;
+        subscription.status = 'active';
+
+        activeSubscription.status = 'canceled-by-system';
+
+        await this.employerAdminsService.unSuspendAdditionalAdmins(subscription.employer, subscription.activePlan.accountLimit);
+
+        await Promise.all([subscription.save(), activeSubscription.save()]);
+      } else {
+        this.logger.error(`Subscription does not exist: ${invoice.subscription}`);
+        return ResponseHandler.fail('Subscription does not exist');
+      }
+    }
+
+    return ResponseHandler.success(subscription);
+  }
+
+  async updateCollegeOrState(updateCollegeOrStateDto: UpdateCollegeOrStateDto) {
+    let subscription = await this.employerSubscriptionModel.findByIdAndUpdate(
+      updateCollegeOrStateDto.subscription,
+      {
+        $set: {
+          connectedCollege: updateCollegeOrStateDto.college ? updateCollegeOrStateDto.college : null,
+          connectedState: updateCollegeOrStateDto.state ? updateCollegeOrStateDto.state : null,
+          lastCollegeUpdated: updateCollegeOrStateDto.college ? new Date() : null,
+          lastStateUpdated: updateCollegeOrStateDto.state ? new Date() : null,
+        },
+      },
+      { new: true },
+    );
+
+    subscription = await subscription
+      .populate('connectedCollege', 'title numId city state zip coordinates streetAddress collegeLogo collegeLogoThumbnail')
+      .populate('activePlan')
+      .execPopulate();
+
+    if (subscription.activePlan.level !== 0) {
+      const { data: colleges } = await this.collegesService.getCollegesByStateShortNameForEmployerSubscriptions(
+        subscription.connectedState ? subscription.connectedState.shortName : '',
+      );
+      subscription.connectedColleges = colleges;
+    } else {
+      subscription.connectedColleges = subscription.connectedCollege ? [subscription.connectedCollege] : [];
+      delete subscription.connectedCollege;
+    }
+
+    return ResponseHandler.success(subscription, 'Subscription updated successfully.');
+  }
+
+  async getEmployerInvoices(user) {
+    const { data: invoices } = await this.stripeService.getEmployerInvoices(user.stripeCustomerId);
+
+    const data = await Promise.all(
+      invoices.map(async invoice => {
+        const subscription = await this.employerSubscriptionModel
+          .findOne({ stripeSubscriptionId: invoice.subscription })
+          .populate('activePlan')
+          .lean();
+
+        try {
+          return {
+            number: invoice.number,
+            id: invoice.id,
+            pdfUrl: invoice.invoice_pdf,
+            hostedInvoiceUrl: invoice.hosted_invoice_url,
+            plan: subscription ? subscription.activePlan.title : 'N/A',
+            planLevel: subscription ? subscription.activePlan.level : 0,
+            interval: subscription ? subscription.activePriceInterval : 'month',
+            total: invoice.total / 100,
+            paymentTimestamp: invoice.created,
+            subscription: invoice.subscription,
+          };
+        } catch (e) {
+          return ResponseHandler.success(e);
+        }
+      }),
+    );
+
+    return ResponseHandler.success(data);
+  }
+
+  async initializeEmployerSubscriptionsIfDoesntExist() {
+    const employers = await this.employerModel.aggregate([
+      {
+        $lookup: {
+          from: 'employer-subscriptions',
+          localField: '_id',
+          foreignField: 'employer',
+          as: 'subscriptions',
+        },
+      },
+    ]);
+
+    const { data: plan } = await this.getEmployerSubscriptionPlanByTitle('Local');
+
+    const subscriptions = await Promise.all(
+      employers.map(async employer => {
+        if (!employer.subscriptions || (employer.subscriptions && employer.subscriptions.length === 0)) {
+          return await this.employerSubscriptionModel.create({
+            employer: employer._id,
+            activePlan: plan._id,
+            activePlanSubscribedOn: new Date(),
+            activeProductStripeId: null,
+            activePriceStripeId: null,
+            activePriceInterval: 'month',
+            activePlanExpiryDate: null,
+            status: 'active',
+          });
+        } else {
+          return 'Already subscribed';
+        }
+      }),
+    );
+
+    return ResponseHandler.success(subscriptions);
+  }
+
+  async getActiveSubscription(employerId) {
+    const subscription = await this.employerSubscriptionModel
+      .findOne({ employer: employerId, status: 'active' })
+      .populate('activePlan')
+      .lean();
+
+    if (subscription) {
+      return ResponseHandler.success(subscription);
+    } else {
+      const { data: plan } = await this.getEmployerSubscriptionPlanByLevel(0);
+
+      return ResponseHandler.success({
+        employer: employerId,
+        activePlan: plan,
+        activePriceStripeId: null,
+        activePriceInterval: null,
+        activePlanSubscribedOn: null,
+        activePlanExpiryDate: null,
+        expiredOn: null,
+        stripeSubscriptionId: null,
+        status: 'active',
+        connectedCollege: null,
+        connectedState: null,
+        lastCollegeUpdated: null,
+        lastStateUpdated: null,
+        firstSubscriptionPayment: 0,
+      });
+    }
+  }
+
+  async getEmployerCurrentSubscriptionPlan(employerId) {
+    const plan = await this.employerSubscriptionModel
+      .findOne({ employer: employerId, status: 'active' })
+      .populate('activePlan')
+      .populate('nextSubscriptionPlan')
+      .populate('nextSubscription')
+      .populate('connectedCollege')
+      .exec();
+
+    return ResponseHandler.success(plan);
+  }
+
+  async getEmployerSubscriptionPlanByTitle(title) {
+    const plan = await this.employerSubscriptionPlanModel.findOne({ title }).lean();
+
+    return ResponseHandler.success(plan);
+  }
+
+  async getEmployerSubscriptionPlanByLevel(level) {
+    const plan = await this.employerSubscriptionPlanModel.findOne({ level }).lean();
+
+    return ResponseHandler.success(plan);
+  }
+
+  async getEmployerSubscriptionPlans(user) {
+    if (user && user.employerId) {
+      const plans = await this.employerSubscriptionPlanModel
+        .aggregate([
+          {
+            $lookup: {
+              from: 'employer-subscriptions',
+              let: { planId: '$_id' },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: ['$activePlan', '$$planId'] },
+                        { $eq: ['$status', 'active'] },
+                        { $eq: ['$employer', mongoose.Types.ObjectId(user.employerId)] },
+                      ],
+                    },
+                  },
+                },
+              ],
+              as: 'subscription',
+            },
+          },
+          {
+            $unwind: {
+              path: '$subscription',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'employer-subscriptions',
+              let: { nextPlanId: '$subscription.nextSubscription' },
+              pipeline: [
+                { $match: { $expr: { $eq: ['$_id', '$$nextPlanId'] } } },
+                {
+                  $lookup: {
+                    from: 'employer-subscription-plans',
+                    localField: 'activePlan',
+                    foreignField: '_id',
+                    as: 'activePlan',
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$activePlan',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+              ],
+              as: 'nextSubscription',
+            },
+          },
+          {
+            $unwind: {
+              path: '$nextSubscription',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          { $sort: { level: 1 } },
+        ])
+        .exec();
+
+      return ResponseHandler.success(plans);
+    } else {
+      const plans = await this.employerSubscriptionPlanModel
+        .find()
+        .sort({ level: 1 })
+        .lean();
+
+      return ResponseHandler.success(plans);
+    }
+  }
+
+  async initializeDefaultSubscriptionPlans() {
+    const plans = await Promise.all(
+      defaultEmployerSubscriptionPlans.map(async plan => {
+        const existingPlan = await this.employerSubscriptionPlanModel.findOne({ title: plan.title }).lean();
+        if (!existingPlan || !existingPlan.stripeProductId) {
+          const { data: stripePlan } = await this.stripeService.createProduct(plan);
+
+          plan.stripeProductId = stripePlan.product ? stripePlan.product.id : null;
+          plan.prices = {
+            monthly:
+              plan.monthlyPrice > 0
+                ? {
+                    stripeId: stripePlan.prices.monthly.id,
+                    price: plan.monthlyPrice,
+                  }
+                : null,
+            yearly:
+              plan.yearlyPrice > 0
+                ? {
+                    stripeId: stripePlan.prices.yearly.id,
+                    price: plan.yearlyPrice,
+                  }
+                : null,
+          };
+        }
+
+        const newPlan = await this.employerSubscriptionPlanModel.findOneAndUpdate(
+          { title: plan.title },
+          { $set: plan },
+          {
+            upsert: true,
+            new: true,
+          },
+        );
+
+        return newPlan;
+      }),
+    );
+
+    return ResponseHandler.success(plans, 'Plans initialized successfully.');
+  }
+
+  @Cron(CronExpression.EVERY_2ND_HOUR)
+  async subscriptionCycleCron() {
+    // const activeSubscriptions = await this.employerSubscriptionModel
+    //   .find({
+    //     status: 'active',
+    //     nextSubscription: { $ne: null },
+    //   })
+    //   .populate('employer')
+    //   .populate('activePlan')
+    //   .populate('nextSubscriptionPlan')
+    //   .populate('nextSubscription')
+    //   .exec();
+    // activeSubscriptions.map(async subscription => {
+    //   const expired = new Date(subscription.activePlanExpiryDate) < new Date();
+    //   if (expired) {
+    //     if (subscription.nextSubscription) {
+    //       const { data: selectedPrice } = await this.stripeService.getProductPrice(subscription.nextSubscription.priceStripeId);
+    //       await this.employerSubscriptionModel.findByIdAndUpdate(subscription.nextSubscription._id, {
+    //         $set: {
+    //           status: 'active',
+    //           activePlanExpiryDate: selectedPrice
+    //             ? selectedPrice.recurring.interval === 'month'
+    //               ? new Date(new Date().setMonth(new Date().getMonth() + 1))
+    //               : new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+    //             : null,
+    //         },
+    //       });
+    //       await this.employerSubscriptionModel.findByIdAndUpdate(subscription._id, {
+    //         $set: {
+    //           status: 'changed-plan',
+    //           expiredOn: new Date(),
+    //         },
+    //       });
+    //     } else {
+    //       await this.employerSubscriptionModel.findByIdAndUpdate(subscription._id, {
+    //         $set: {
+    //           status: 'expired',
+    //           expiredOn: new Date(),
+    //         },
+    //       });
+    //     }
+    //   }
+    // });
+  }
+}

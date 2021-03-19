@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+    <html>
+    <head>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+      <title></title>
+      <meta name="generator" content="LibreOffice 6.0.7.3 (Linux)"/>
+      <meta name="author" content="Windows User"/>
+      <meta name="created" content="2020-06-12T21:56:00"/>
+      <meta name="changedby" content="Windows User"/>
+      <meta name="changed" content="2020-06-23T17:09:00"/>
+      <meta name="AppVersion" content="14.0000"/>
+      <meta name="DocSecurity" content="0"/>
+      <meta name="HyperlinksChanged" content="false"/>
+      <meta name="LinksUpToDate" content="false"/>
+      <meta name="ScaleCrop" content="false"/>
+      <meta name="ShareDoc" content="false"/>
+      <style type="text/css">
+        @page { margin: 1in }
+        p { margin-bottom: 0.1in; direction: ltr; line-height: 115%; text-align: left; orphans: 2; widows: 2 }
+        a:link { color: #0000ff }
+      </style>
+    </head>
+    <body lang="en-US" link="#0000ff" dir="ltr">
+    {{> header unmudlLogo = unmudlLogo}}
+    <p style="margin-bottom: 0.14in"><br/>
+    <br/>
+
+    </p>
+    <p style="margin-bottom: 0.14in"> {{date}}</p>
+    <p style="margin-bottom: 0.14in">Dear {{college.title}},</p>
+    <p style="margin-bottom: 0.14in">This is to let you know that </p>
+    <p style="margin-bottom: 0.14in">
+    <ul>
+      <li/>
+    <p style="margin-bottom: 0.14in">{{learner.fullname}} 
+      </p>
+      <li/>
+    {{#if hasEmail}}
+    <p style="margin-bottom: 0.14in"><b>Email:</b>
+    {{learner.emailAddress}}</p>
+    {{else}}
+    <p style="margin-bottom: 0.14in"><b>Phone:</b>
+    {{learner.phoneNumber}}</p>
+    {{/if}} 
+      <li/>
+    <p style="margin-bottom: 0.14in"><b>Unmudl ID:</b> 
+      {{learner._id}}, 
+      </p>
+    </ul>
+    </p>
+    <p style="margin-bottom: 0.14in">has
+    just been autoaccepted  into
+    </p>
+    <ul>
+      <li/>
+    <p style="margin-bottom: 0.14in"><b>Course:</b> {{course.title}} 
+      </p>
+    </ul>
+    <p style="margin-left: 0.5in; margin-bottom: 0.14in"><br/>
+    <br/>
+
+    </p>
+    <p style="margin-bottom: 0.14in">and their credit card has been
+    charged the course fee.  
+    </p>
+    <p style="margin-bottom: 0.14in"><b>FOR INSTRUCTORS:</b>  You don’t
+    have to do anything.  This email is just an FYI that an additional
+    learner has enrolled In your course.</p>
+    <p style="margin-bottom: 0.14in"><b>FOR SUPERADMINS AND ENROLLMENT
+    OFFICERS</b>:  If your college has completed backend integration AND
+    the course is online-only, a link to “Launch Course” should
+    appear automatically in the student’s My Enrollments section of
+    Unmudl.  In that one case,  the student will have everything s/he
+    needs to access the class.  
+    </p>
+    <p style="margin-bottom: 0.14in"><a name="_GoBack"></a>In all other
+    cases, you will need to follow up with a personal email/phone call
+    with the student explaining when and where to show up for the course
+    (if in person) or when and where to log in (if online).  Please also
+    ensure the student’s information is entered into your own student
+    information systems and LMS.  Depending on the enrollment
+    configuration your college has chosen for backend integration, this
+    may be happening automatically.  If you need to manually register and
+    enroll the student in your systems, you can find all the necessary
+    student information at
+    <font color="#0000ff"><u><a href={{learnerPortalDashboard}}>{{learnerPortalDashboard}}</a></u></font>
+    -&gt; Learners -&gt; 3 dots to the right of learner’s name -&gt;View
+    Profile 
+    </p>
+    <p style="margin-bottom: 0.14in">Thank you – and if you run into
+    problems, please contact Unmudl support at
+    <font color="#0000ff"><u><a href="mailto:{{supportMail}}">{{supportMail}}</a></u></font>.</p>
+    
+    <p style="margin-bottom: 0.14in"><br/>
+    <br/>
+
+    </p>
+    {{> footer}}
+    </body>
+    </html>

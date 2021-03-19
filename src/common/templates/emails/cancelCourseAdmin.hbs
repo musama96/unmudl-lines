@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title></title>
+  <meta name="generator" content="LibreOffice 6.0.7.3 (Linux)" />
+  <meta name="author" content="Windows User" />
+  <meta name="created" content="2020-06-12T21:41:00" />
+  <meta name="changedby" content="Windows User" />
+  <meta name="changed" content="2020-06-12T22:12:00" />
+  <meta name="AppVersion" content="14.0000" />
+  <meta name="DocSecurity" content="0" />
+  <meta name="HyperlinksChanged" content="false" />
+  <meta name="LinksUpToDate" content="false" />
+  <meta name="ScaleCrop" content="false" />
+  <meta name="ShareDoc" content="false" />
+  <style type="text/css">
+    @page {
+      margin: 1in
+    }
+
+    p {
+      margin-bottom: 0.1in;
+      direction: ltr;
+      line-height: 115%;
+      text-align: left;
+      orphans: 2;
+      widows: 2
+    }
+
+    a:link {
+      color: #0000ff
+    }
+  </style>
+</head>
+
+<body lang="en-US" link="#0000ff" dir="ltr">
+  {{> header unmudlLogo = unmudlLogo}}
+  <p style="margin-bottom: 0.14in"><br />
+    <br />
+
+  </p>
+  <p style="margin-bottom: 0.14in"> {{date}}</p>
+  <p style="margin-bottom: 0.14in">Dear {{admin.fullname}}, </p>
+  <p>
+    This is to let you know that a college administrator has initiated the cancellation of {{course.title}} on Unmudl,
+    and all
+    of the following learners will be unenrolled and given 100% refunds:
+  </p>
+  <div>
+    <ul>
+      {{#each learners}}
+      <li>{{this.fullname}}</li>
+      <li>Email: {{this.emailAddress}}</li>
+      <li>UnmudlId: {{this._id}}</li>
+      <li>CollegeId: {{this.collegeId}}</li>
+      <li style="margin-bottom: 18px;">Refund Amount: ${{this.refundAmount}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  <p>
+    You are not required to do anything further on Unmudl. This is just a notification.
+    If you run into problems, please contact Unmudl support at unmudlsupport@socialtech.ai.
+  </p>
+  <p>
+    Thank you.
+  </p>
+  {{> footer}}
+</body>
+
+</html>
