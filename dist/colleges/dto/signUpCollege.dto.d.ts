@@ -1,0 +1,33 @@
+import { StateDto } from '../../common/dto/state.dto';
+import CoordinatesDto from '../../common/dto/coordinates.dto';
+import UrlDto from './url.dto';
+import ContactDto from './contact.dto';
+export declare class SignUpCollegeDto {
+    _id?: string;
+    token?: string;
+    profilePhoto?: any;
+    profilePhotoThumbnail?: string;
+    collegeLogo?: any;
+    collegeBanner?: any;
+    collegeLogoThumbnail?: string;
+    collegeId?: string;
+    invitation?: string;
+    fullname: string;
+    password: string;
+    designation: string;
+    role?: string;
+    timeZone?: string;
+    description?: string;
+    communityCollegeId?: string;
+    coordinates?: CoordinatesDto;
+    url?: UrlDto;
+    contact?: ContactDto;
+    title: string;
+    address: string;
+    streetAddress?: string;
+    city: string;
+    state: StateDto;
+    zip: string;
+    country?: string;
+    timezone?: string;
+}

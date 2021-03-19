@@ -1,0 +1,1 @@
+{"version":3,"file":"uploadImage.dto.js","sourceRoot":"","sources":["../../../src/common/dto/uploadImage.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAeA,6CAA8C;AAE9C,MAAM,SAAS,GAAG,GAAG,CAAC,EAAE;IACtB,OAAO,IAAI,CAAC,KAAK,CAAC,GAAG,CAAC,CAAC;AACzB,CAAC,CAAC;AAEF,MAAa,cAAc;;;;CAG1B;AADC;IADC,qBAAW,CAAC,EAAE,IAAI,EAAE,QAAQ,EAAE,MAAM,EAAE,QAAQ,EAAE,CAAC;;4CACxC;AAFZ,wCAGC"}

@@ -1,0 +1,35 @@
+export declare class GiftCourseDto {
+    recipientEmail?: string;
+    recipientName?: string;
+    message: string;
+    courseId?: string;
+    promoId?: string;
+    cardId?: string;
+    recipientId?: string;
+    senderId?: string;
+    senderName?: string;
+    senderEmail?: string;
+    stripeCustomerId?: string;
+    deleteCard?: boolean;
+    transactionId?: string;
+    discountType?: string;
+    discountPercentage?: number;
+    discountTotal?: number;
+    salesTax?: number;
+    taxPercentage?: number;
+    totalPaid?: number;
+    taxRate?: number;
+    totalRevenue?: number;
+    unmudlShare?: number;
+    unmudlSharePercentage?: number;
+    collegeShare?: number;
+    stripeFee?: number;
+    courseFee?: number;
+    keptByUnmudl?: number;
+    sentToCollege?: number;
+    status?: string;
+    transferId?: string;
+    destPaymentId?: string;
+    giftCode?: string;
+    _id?: string;
+}

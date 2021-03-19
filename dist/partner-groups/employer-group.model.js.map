@@ -1,0 +1,1 @@
+{"version":3,"file":"employer-group.model.js","sourceRoot":"","sources":["../../src/partner-groups/employer-group.model.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,mBAAmB,GAAG,IAAI,QAAQ,CAAC,MAAM,CACpD;IACE,KAAK,EAAE,EAAC,IAAI,EAAE,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAC;IACrC,KAAK,EAAE,EAAC,IAAI,EAAE,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAC;CACtC,EACD;IACE,UAAU,EAAE,IAAI;CACjB,CACF,CAAC"}

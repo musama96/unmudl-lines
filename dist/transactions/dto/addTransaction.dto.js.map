@@ -1,0 +1,1 @@
+{"version":3,"file":"addTransaction.dto.js","sourceRoot":"","sources":["../../../src/transactions/dto/addTransaction.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AACA,oEAA6D;AAC7D,6CAAkD;AAClD,wDAAoD;AAEpD,MAAa,iBAAiB;;;;CAS7B;AAPC;IADC,sBAAS,CAAC,KAAK,EAAE,EAAE,OAAO,EAAE,0BAAgB,CAAC,cAAc,CAAC,QAAQ,EAAE,CAAC;;mDACvD;AAMjB;IADC,yBAAe,EAAE;;oDACA;AARpB,8CASC"}

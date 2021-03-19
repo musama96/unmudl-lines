@@ -1,0 +1,1 @@
+{"version":3,"file":"tax-rate.model.js","sourceRoot":"","sources":["../../src/tax-rates/tax-rate.model.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,cAAc,GAAG,IAAI,QAAQ,CAAC,MAAM,CAC/C;IACE,KAAK,EAAE,MAAM;IACb,UAAU,EAAE,MAAM;IAClB,OAAO,EAAE,MAAM;CAChB,EACD;IACE,UAAU,EAAE,IAAI;CACjB,CACF,CAAC"}

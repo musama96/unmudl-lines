@@ -1,0 +1,31 @@
+import { StateDto } from '../../common/dto/state.dto';
+import CoordinatesDto from '../../common/dto/coordinates.dto';
+import UrlDto from './url.dto';
+export declare class SignUpEmployerDto {
+    _id?: string;
+    token?: string;
+    profilePhoto?: any;
+    profilePhotoThumbnail?: string;
+    employerBanner?: any;
+    employerLogo?: any;
+    employerLogoThumbnail?: any;
+    employerId?: string;
+    invitation?: string;
+    fullname: string;
+    password: string;
+    designation: string;
+    role?: string;
+    size: number;
+    industry?: string[];
+    description?: string;
+    coordinates?: CoordinatesDto;
+    url?: UrlDto;
+    title: string;
+    address?: string;
+    city?: string;
+    state?: StateDto;
+    zip?: string;
+    country?: string;
+    timezone?: string;
+    industries?: string[];
+}

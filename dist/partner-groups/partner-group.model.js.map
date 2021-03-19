@@ -1,0 +1,1 @@
+{"version":3,"file":"partner-group.model.js","sourceRoot":"","sources":["../../src/partner-groups/partner-group.model.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,kBAAkB,GAAG,IAAI,QAAQ,CAAC,MAAM,CACnD;IACE,KAAK,EAAE,EAAC,IAAI,EAAE,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAC;IACrC,KAAK,EAAE,EAAC,IAAI,EAAE,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAC;CACtC,EACD;IACE,UAAU,EAAE,IAAI;CACjB,CACF,CAAC"}
